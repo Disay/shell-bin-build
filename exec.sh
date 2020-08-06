@@ -22,6 +22,7 @@ fi
 
 if [ ! -d $logDir ];then 
     echo "mkdir logs directory "
+    mkdir -p $workspace/logs
 fi 
 
 if [ ! -d "$sourceDir" ]; then
@@ -41,17 +42,17 @@ fi
 
 if [ ! -d "$execDir/$dateTag" ]; then
     echo "[INFO] Create directory exec$dateTag"  >> $logDir/build-$dateTag.log
-    mkdir $execDir/$dateTag
+    mkdir -p $execDir/$dateTag
 fi
 # ensure all executable files in the target folder have the x bit set
-chmod +x $sourceDir/*.sh 
+#chmod +x $sourceDir/*.sh 
 
 # check for the makeself tool
 script=`ls $sourceDir/`
 for i in $script;
 do 
     echo "It's going to copy $sourceDir/$i to  $buildDir" >> $logDir/build-$dateTag.log
-    mv $sourceDir/$i $buildDir
+    mv -f  $sourceDir/$i $buildDir
     if [ -d $buildDir/$i ];then 
         projectName=`basename "$i"`
 	if [ -f  $buildDir/$i/$i.sh ]; then  
@@ -63,15 +64,16 @@ do
         if [ -d $execDir/$dateTag/$i ];then
             rm -rf $execDir/$dateTag/$i
         fi
-        mv $buildDir/* $execDir/$dateTag
+        mv -f $buildDir/* $execDir/$dateTag
         echo "find your binary in $execDir"
         echo "`date +%Y-%m-%d` `date +%R` build $i " >> $logDir/build-$dateTag.log        
         fi
     else		  
         projectNameVersion=`basename -s .sh "$i"`
-	shc -e 28/01/2023 -r -f ./$projectNameVersion.sh -o ./$projectNameVersion-$dateTag.bin
+        shc -e 28/01/2023 -r -f $buildDir/$projectNameVersion.sh -o $buildDir/$projectNameVersion-$dateTag.bin
+        chmod +x $buildDir/$projectNameVersion-$dateTag.bin
         #$makeself --follow --nocomp "$buildDir" "$buildDir/${projectNameVersion}-$dateTag.bin" "buildup $projectNameVersion" ./$projectNameVersion
-        mv $buildDir/* $execDir/$dateTag
+        mv -f $buildDir/* $execDir/$dateTag
         echo "find your binary in $execDir"
         echo "`date +%Y-%m-%d` `date +%R` build $i " >> $logDir/build-$dateTag.log
     fi
