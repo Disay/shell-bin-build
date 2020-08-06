@@ -65,6 +65,9 @@ do
 	chmod +x main
         $makeself --follow --nocomp "./" "$buildDir/${projectName}-$dateTag.bin" "buildup $projectName" ./main
 	cd -
+        if [ -d $execDir/$dateTag/$i ];then
+            rm -rf $execDir/$dateTag/$i
+        fi     
         mv -f $buildDir/* $execDir/$dateTag
         echo "find your binary in $execDir"
         echo "`date +%Y-%m-%d` `date +%R` build $i " >> $logDir/build-$dateTag.log        
